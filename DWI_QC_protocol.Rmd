@@ -12,9 +12,10 @@ This protocol covers a two step QC process that will be completed on an analysis
   
   
 The two step process involves:  
-1. __Visual QC__  
-2. __Quantitative QC__  
 
+  1. __Visual QC__  
+  2. __Quantitative QC__  
+  
 ***  
 ## Step 0
 Data collected by the TIGR lab and collaborators undergoes a first pass QC by staff on our dashboard as outlined [here](https://github.com/TIGRLab/documentation/wiki/QC---dashboard). This is a very liberal check, and so most of the data will be passed except for very extreme outliers of poor quality scans. These can be found in the archive. External data from open sources (e.g. HCP, PNC, ABCD) does not go through our dashboard but should have undergone a similar basic QC assessment before being released (this might vary drastically from study to study so check the release notes!). 
@@ -36,10 +37,11 @@ Before beginning to QC you should set up a csv file to note artifacts on the dif
 
 The QC pipeline creates various html pages with a selection of 9 images (3 from each orthogonal direction) for each subject from the dataset. This makes it easy to scroll through and look for artifacts and processing errors.  
 Four htmls are created:  
-1. BET  
-2. directions  
-3. residuals  
-4. noise  
+
+  1. BET  
+  2. directions  
+  3. residuals  
+  4. noise  
 
 You can open them from the terminal with ```google-chrome qc_BET.html``` etc  
 
@@ -68,9 +70,11 @@ The directions image intensity corresponds to the FA values with the colours enc
 ![](figures/directions_1.png){ width=100% }  
 
 This is what the direction images look like.  
-1. The ventricles will appear black. Some people just have large ventricles. How it looks will also vary dependent on the head position in the scanner so the _same_ slice may not show the same bit of brain across subjects   
-2. This should be the mid-sagital slice but again depending on the head position in the scanner there's quite a lot of variability in how these look. i.e. sometimes very black if the subject is well centred. The red of the corpus callosum should always be nicely clear. And if you're lucky the green of the fornix and the blue of the spinal cord.  
-3. This is an artifact! These bright rims around the outside of the brain are the most common artifact in the direction QC. This one is quite mild.  
+
+  1. The ventricles will appear black. Some people just have large ventricles. How it looks will also vary dependent on the head position in the scanner so the _same_ slice may not show the same bit of brain across subjects   
+  2. This should be the mid-sagital slice but again depending on the head position in the scanner there's quite a lot of variability in how these look. i.e. sometimes very black if the subject is well centred. The red of the corpus callosum should always be nicely clear. And if you're lucky the green of the fornix and the blue of the spinal cord.  
+  3. This is an artifact! These bright rims around the outside of the brain are the most common artifact in the direction QC. This one is quite mild.  
+
 <br></br> 
 ![](figures/directions_bad_egs.png){ width=100% }  
 
@@ -82,9 +86,11 @@ Residual images are the sse (sum of squares error) from the tensor model fit (ge
 <br></br>  
 ![](figures/Res_1.png){ width=100% }  
 
-1. Some examples of bright rims that are common artifacts dentifiable with the residual images 
-2. This strippy kind of pattern will also be evident in high movement scans 
-3. This is a hardware artifact. Normally most prominent on the axial slices and smoothly curved.  
+  1. Some examples of bright rims that are common artifacts dentifiable with the residual images 
+  
+  2. This strippy kind of pattern will also be evident in high movement scans 
+  
+  3. This is a hardware artifact. Normally most prominent on the axial slices and smoothly curved.  
 <br></br> 
 
 ![](figures/Res_bad.png){ width=100% }  
@@ -95,10 +101,40 @@ These are some examples of subjects to exclude. The blue arrows indicate some lo
 ***  
 ### 1.4 Noise  
 Noise images are generated with the dwidenoise command with the -noise flag. As you could imagine, this is an image which indicates how noisy the data in the brain image is. Similar to residuals, the images are thresholded and coloured red (low) to yellow (high) on a study by study basis, based on an optimal threshold which is calculated by lab experts and included in the DWI QC Script. Noise should be low and consistent across the whole image. Noise images, much like the residuals above, are very useful for identifying local artifacts as well as overall bad scans. In contrast to the residuals artifacts in the noise images will often appear as red rather than yellow. Some examples are highlighted below.  
+<br></br>  
+
+
+__ADD MORE FIGURES__
 
 
 ***  
 ## Step 2. Quantitative QC  
+This step incorporates quantitative metrics of quality to supplement the visual QC. __Failing either visual or quantitative QC should result in exclusion__.  
+
+The quantitative QC is based on output metrics from eddy (or recalculated measures if bias correction is implemented following eddy). These include:  
+
+  1. __Contrast to noise ratio (CNR)__: High CNR means there is good contrast between different brain tissues.  
+  2. __Signal to noise ratio (SNR)__: The signal in a voxel divided by the standard deviation of the signal across a region outside the brain. High SNR means a good signal with low noise.  
+  3. __Average relative motion__: This is the average of the motion between each pair of consecutive volumes. You want as little motion as possible!  
+  4. __Average absolute motion__: This is a metric of how much motion there is within the whole scan.  
+     + A caveat with this is when scans are concatenated. Some protocols break their scan into separate runs (within the same session) and then merge them together for processing & analysis as if it was one scan. Absolute motion may therefore be superficially increased due to movement between scans.  
+  5. __Total outliers__: The number of outlier slices per volume is calculated then averaged across all volumes. Lower the better.  
+
+<br></br>
+All these measures are gathered for the whole sample in one csv file after the QC script is run (you can find this in the QC directory too). Here's what it looks like:  
+
+![](figures/eddy_metrics_file.png){ width=100% }  
+<br></br>
+To do the quantitative analysis you simply need to run our quantitative QC script (located ----------------) with the path to your csv file which is named STUDYNAME_eddy_metrics.csv.  
+<br></br>  
+`module load R`  
+`cd /path/to/your/study/dmriprep/QC/`  
+`Rscript /path/to/script/quant_QC.Rmd studyname_eddy_metrics.csv`  
+<br></br>
+This will produce a html report with details about your study data and the subjects that were outliers (and on what metric). Additionally the script produces a new csv file with the quantitative QC _decision_ as a variable (`Quant_QC_2SD`). The 2SD reflects the 2 standard deviations used to determine outliers.  
+
+
+
 
 
 
