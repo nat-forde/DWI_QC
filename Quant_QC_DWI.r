@@ -26,9 +26,10 @@ library(cowplot)
 library(ggpubr)
 library(gridExtra)
 library(grid)
+library(rmarkdown)
+
 
 library(glue)
-library(rmarkdown)
 library(plotly)
 library(table1)
 library(wesanderson)
