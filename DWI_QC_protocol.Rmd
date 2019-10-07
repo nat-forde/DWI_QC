@@ -129,7 +129,7 @@ To do the quantitative analysis you simply need to run our quantitative QC scrip
 <br></br>  
 `module load R`  
 `cd /path/to/your/study/dmriprep/QC/`  
-`Rscript /path/to/script/quant_QC.Rmd studyname_eddy_metrics.csv`  
+`Rscript /path/to/script/Quant_QC_DWI.R STUDYNAME_eddy_metrics.csv`  
 <br></br>
 This will produce a html report with details about your study data and the subjects that were outliers (and on what metric). Additionally the script produces a new csv file with the quantitative QC _decision_ as a variable (`Quant_QC_2SD`). The 2SD reflects the 2 standard deviations used to determine outliers.  
 
