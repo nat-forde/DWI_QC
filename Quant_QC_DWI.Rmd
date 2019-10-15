@@ -8,9 +8,9 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-# prelude
+# Prelude
 This report should give you details of the DWI Quantitative QC for your datasets.  
-```{r load, echo=FALSE}
+```{r load, echo=FALSE, warnings=FALSE, message=FALSE}
 args <- commandArgs(TRUE)
 
 if (length(args)==0) {
@@ -44,12 +44,12 @@ df <- read.csv(metric_file, header=TRUE)
 #bvals can vary across studies and there are multiple for multishell data. This will make a list of the cnr variables you need 
 avg_cnr <- df %>% select(starts_with("avg_cnr")) %>% names()
 
-plot_cnr <- function(roi, df) {
-  df2 <- df %>% filter(get(roi) < 9999)
-  plot <- ggplot(df2, aes_string(x = roi)) +
+plot_cnr <- function(cnr, df) {
+  df2 <- df %>% filter(get(cnr) < 9999)
+  plot <- ggplot(df2, aes_string(x = cnr)) +
     geom_density(size = 2, aes(color = "#440154FF"), fill="lightblue") +
-    geom_vline(data = df2, aes(xintercept = mean(get(roi)), color = "lightblue"), linetype = "dashed", size = 1) +
-    labs(title = paste0("Distribution of ", roi," CNR Values"), x = paste0(roi, " CNR Values"), y = "Density") +
+    geom_vline(data = df2, aes(xintercept = mean(get(cnr)), color = "lightblue"), linetype = "dashed", size = 1) +
+    labs(title = paste0("Distribution of ", cnr," CNR Values"), x = paste0(cnr, " CNR Values"), y = "Density") +
     theme_bw() + theme(legend.position="none")
   return(plot)
 }
@@ -88,8 +88,10 @@ plot_grid(density_plot_outliers(df), density_plot_rel_mot(df), density_plot_snr(
           labels = c("A", "B", "C"),
           ncol = 1, nrow = 3)
 
-plot_grid(plotlist=density_plot_cnr, ncol = 1)
+plot_grid(plotlist=density_plot_cnr, ncol = 1)  
+
 ```
+  
 # Outliers  
 Outliers are calculated as more than 2 standard deviations from the group average for that metric. In some cases we only exclude those more than 2 SD in the _bad_ direction. i.e. a subject with extremely low motion may be more than 2 SD from the mean but we will not exclude for that.   
 ```{r outliers, echo=FALSE}
