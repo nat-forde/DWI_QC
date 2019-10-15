@@ -86,10 +86,8 @@ Residual images are the sse (sum of squares error) from the tensor model fit (ge
 <br></br>  
 ![](figures/Res_1.png){ width=100% }  
 
-  1. Some examples of bright rims that are common artifacts dentifiable with the residual images 
-  
-  2. This strippy kind of pattern will also be evident in high movement scans 
-  
+  1. Some examples of bright rims that are common artifacts dentifiable with the residual images  
+  2. This strippy kind of pattern will also be evident in high movement scans  
   3. This is a hardware artifact. Normally most prominent on the axial slices and smoothly curved.  
 <br></br> 
 
@@ -129,9 +127,7 @@ To do the quantitative analysis you simply need to run our quantitative QC scrip
 <br></br>  
 `module load R/3.4.3`  
 ```
-R -e "Sys.setenv(RSTUDIO_PANDOC='/mnt/tigrlab/quarantine/rstudio/1.1.414/build/rstudio-1.1.414/bin/pandoc'); 
-rmarkdown::render('/path/to/script/Quant_QC_DWI.Rmd', output_file='/path/to/output/$STUDY_Quant_QCreport.html')" 
---args "/path/to/dmriprep/QC/$STUDY_eddy_metrics.csv"
+R -e "Sys.setenv(RSTUDIO_PANDOC='/mnt/tigrlab/quarantine/rstudio/1.1.414/build/rstudio-1.1.414/bin/pandoc'); rmarkdown::render('/path/to/script/Quant_QC_DWI.Rmd', output_file='/path/to/output/$STUDY_Quant_QCreport.html')" --args "/path/to/dmriprep/QC/$STUDY_eddy_metrics.csv"
 ```
 
 <br></br>
